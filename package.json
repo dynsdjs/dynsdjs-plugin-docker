@@ -1,0 +1,31 @@
+{
+  "name": "dynsdjs-plugin-docker",
+  "version": "0.0.1",
+  "description": "Docker plugin for dynsdjs",
+  "author": "Julian Xhokaxhiu",
+  "license": "MIT",
+  "homepage": "https://github.com/dynsdjs/dynsdjs-plugin-docker#readme",
+  "bugs": {
+    "url": "https://github.com/dynsdjs/dynsdjs-plugin-docker/issues"
+  },
+  "main": "dist/DynsdDocker.js",
+  "scripts": {
+    "build:dev": "webpack",
+    "build:watch": "webpack --watch",
+    "prepublish": "webpack --env=prod"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dynsdjs/dynsdjs-plugin-docker.git"
+  },
+  "keywords": [
+    "dynsd"
+  ],
+  "devDependencies": {
+    "babili-webpack-plugin": "^0.1.2",
+    "docker-events": "0.0.2",
+    "dockerode": "^2.5.1",
+    "shebang-loader": "0.0.1",
+    "webpack": "^3.3.0"
+  }
+}
