@@ -14,9 +14,9 @@ $ npm install -g dynsdjs-plugin-docker
 You can configure this plugin through Environment variables
 
 - `DOCKER_HOST` will tell to the plugin the path to your Docker Host in order to connect to ( see the Docker Daemon [official documentation](https://docs.docker.com/engine/reference/commandline/dockerd/#examples) for more )
-- `DYNSDJS_DOCKER_TEMPLATE_IN` will tell to the template engine which files to use as input ( see [Templating](#Templating) )
-- `DYNSDJS_DOCKER_TEMPLATE_OUT` will tell to the template engine where to save the generated file ( see [Templating](#Templating) )
-- `DYNSDJS_DOCKER_TEMPLATE_CALLBACK` provide a fully custom entrypoint that will be run through [child_process.exec](https://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback) ( see [Templating](#Templating) )
+- `DYNSDJS_DOCKER_TEMPLATE_IN` will tell to the template engine which files to use as input ( see [Templating](#templating) )
+- `DYNSDJS_DOCKER_TEMPLATE_OUT` will tell to the template engine where to save the generated file ( see [Templating](#templating) )
+- `DYNSDJS_DOCKER_TEMPLATE_CALLBACK` provide a fully custom entrypoint that will be run through [child_process.exec](https://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback) ( see [Templating](#templating) )
 
 ## Usage
 
