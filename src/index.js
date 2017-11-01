@@ -41,33 +41,40 @@ const buildInfo = ( status, name, data ) => {
   if ( !container.domain )
     container.domain = container.name
 
-  // Add or remove the entry from the DNS
-  if ( status === 'stop' )
-    entries
-      .del( container.domain )
-  else {
-    // Build the entry
-    if ( container.A )
-      entry.A = {
-        name: container.domain,
-        address: container.A,
-        ttl: 600
-      }
+  // Handle multiple domains using CSV format
+  container.domain
+    .split( ',' )
+    .forEach(
+      domain => {
+        // Add or remove the entry from the DNS
+        if ( status === 'stop' )
+          entries
+            .del( domain )
+        else {
+          // Build the entry
+          if ( container.A )
+            entry.A = {
+              name: domain,
+              address: container.A,
+              ttl: 600
+            }
 
-    if ( container.AAAA )
-      entry.AAAA = {
-        name: container.domain,
-        address: container.AAAA,
-        ttl: 600
-      }
+          if ( container.AAAA )
+            entry.AAAA = {
+              name: domain,
+              address: container.AAAA,
+              ttl: 600
+            }
 
-    // Add the entry
-    entries
-      .set(
-        container.domain,
-        entry
-      )
-  }
+          // Add the entry
+          entries
+            .set(
+              domain,
+              entry
+            )
+        }
+      }
+    )
 
   console.log( `[${chalk.blue('DOCKER')}] ${action} container with domain '${chalk.green(container.domain)}'...` )
 }
