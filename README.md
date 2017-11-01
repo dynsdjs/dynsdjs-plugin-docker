@@ -41,6 +41,8 @@ The domain fetch from your container will be done in this particular order:
 1. First it will try to see if the [jwilder/nginx-proxy](https://github.com/jwilder/nginx-proxy) `VIRTUAL_HOST` environment variable is there, and if yes, it will use that as domain. If not found,
 2. It will use the container name
 
+> *INFO:* `VIRTUAL_HOST` may contain comma-separated values. This is fully supported by this plugin. When this happens, all the DNS records will be added for the same container IP.
+
 ## Example
 
 Dynsd side:
