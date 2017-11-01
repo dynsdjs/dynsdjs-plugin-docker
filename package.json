@@ -26,6 +26,7 @@
     "docker-events": "0.0.2",
     "dockerode": "^2.5.1",
     "shebang-loader": "0.0.1",
-    "webpack": "^3.3.0"
+    "webpack": "^3.3.0",
+    "webpack-source-map-support": "^2.0.1"
   }
 }
