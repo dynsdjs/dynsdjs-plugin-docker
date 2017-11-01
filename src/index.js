@@ -1,5 +1,6 @@
 import Dockerode from 'dockerode'
 import DockerEvents from 'docker-events'
+import TemplateGenerator from './template'
 
 // We will use this to store a reference to the dynsd chalk instance
 let chalk = null
@@ -79,6 +80,9 @@ const buildInfo = ( status, name, data ) => {
     )
 
   console.log( `[${chalk.blue('DOCKER')}] ${action} container with domain${domains.length > 1 ? 's' : ''} '${chalk.green(container.domain)}'...` )
+
+  // Generate template file
+  new TemplateGenerator( chalk, status, container )
 }
 
 // Fetch detailed container infos
