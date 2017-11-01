@@ -42,8 +42,9 @@ const buildInfo = ( status, name, data ) => {
     container.domain = container.name
 
   // Handle multiple domains using CSV format
-  container.domain
-    .split( ',' )
+  const domains = container.domain.split( ',' )
+
+  domains
     .forEach(
       domain => {
         // Add or remove the entry from the DNS
@@ -76,7 +77,7 @@ const buildInfo = ( status, name, data ) => {
       }
     )
 
-  console.log( `[${chalk.blue('DOCKER')}] ${action} container with domain '${chalk.green(container.domain)}'...` )
+  console.log( `[${chalk.blue('DOCKER')}] ${action} container with domain${domains.length > 1 ? 's' : ''} '${chalk.green(container.domain)}'...` )
 }
 
 // Fetch detailed container infos
