@@ -29,13 +29,14 @@ const buildInfo = ( status, name, data ) => {
   let entry = {}
 
   // Support jwilder nginx-proxy companion ENV vars
-  container.envs
-    .forEach(
-      env => {
-        if ( env.indexOf( 'VIRTUAL_HOST' ) !== -1 )
-          container.domain = env.split('=')[1]
-      }
-    )
+  if ( container.envs )
+    container.envs
+      .forEach(
+        env => {
+          if ( env.indexOf( 'VIRTUAL_HOST' ) !== -1 )
+            container.domain = env.split('=')[1]
+        }
+      )
 
   // If we still have no domain set, we use the generated name as fallback
   if ( !container.domain )
