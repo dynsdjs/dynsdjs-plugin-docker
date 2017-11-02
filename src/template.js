@@ -11,8 +11,8 @@ let callbackExec = process.env.DYNSDJS_DOCKER_TEMPLATE_CALLBACK || '',
 
 function templateString( str ) {
   return str
-    .replace( '$CONTAINER_NAME', templateData.name )
-    .replace( '$CONTAINER_DOMAIN', templateData.domain )
+    .replace( 'CONTAINER_NAME', templateData.name )
+    .replace( 'CONTAINER_DOMAIN', templateData.domain )
 }
 
 function callback() {

@@ -69,8 +69,8 @@ The process will be **non blocking**, which means that the DNS server has no clu
 
 Some environment variables accept some template strings, that will be replaced during runtime. The list of available template strings are:
 
-- `$CONTAINER_NAME`: the container name ( given through `--name` on `docker run` )
-- `$CONTAINER_DOMAIN`: the container attached domain(s) ( given through `--name` on `docker run` or `-e VIRTUAL_HOST=` ).
+- `CONTAINER_NAME`: the container name ( given through `--name` on `docker run` )
+- `CONTAINER_DOMAIN`: the container attached domain(s) ( given through `--name` on `docker run` or `-e VIRTUAL_HOST=` ).
   **WARNING:** this may contain comma-separated values.
 
 ### Twig file context
