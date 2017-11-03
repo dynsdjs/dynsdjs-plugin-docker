@@ -77,7 +77,21 @@ function generate() {
       // Check if the user wants to generate a template
       if ( templateFile ) {
         // If the path is defined, and it exists then proceed with generation
-        if ( fs.existsSync( templateFile ) )
+        if ( fs.existsSync( templateFile ) ) {
+          // Add custom 'exists' filter, which returns a boolean if the path exists
+          Twig
+            .extendFilter(
+              'exists',
+              path => {
+                let ret = false;
+
+                if ( path )
+                  ret = fs.existsSync( path )
+
+                return ret
+              }
+            )
+
           Twig.renderFile(
             templateFile,
             {
@@ -89,7 +103,7 @@ function generate() {
             }
           )
         // otherwise, warn the user about the non existant path
-        else {
+        } else {
           reject( 'Template file path does not exist. Skipping template generation.' )
         }
       // If not, just continue silently
