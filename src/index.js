@@ -88,13 +88,29 @@ const buildInfo = ( status, name, data ) => {
 // Fetch detailed container infos
 const fetchInfo = container => {
   docker
-    .getContainer( container.id )
+    .getContainer( container.id || container.Id )
     .inspect(
       ( err, data ) => {
         if ( err )
           container.status = 'stop'
 
-        buildInfo( container.status, container.Actor.Attributes.name, data )
+        buildInfo(
+          container.status,
+          data.Name.slice(1), // Remove the first slash from the name
+          data
+        )
+      }
+    )
+}
+
+// Get all the already running containers, and add them
+const fetchRunningContainers = () => {
+  docker
+    .listContainers(
+      ( err, containers ) => {
+        containers.forEach(
+          container => fetchInfo( container )
+        )
       }
     )
 }
@@ -106,6 +122,9 @@ const start = ( resolve, reject, data ) => {
   dockerEmitter
     .on( 'connect', () => {
       console.log( `[${chalk.blue('DOCKER')}] Connected to Docker API...` )
+
+      fetchRunningContainers()
+
       resolve()
     })
     .on( 'start', data => fetchInfo( data ) )
