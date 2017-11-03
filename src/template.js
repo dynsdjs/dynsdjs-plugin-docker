@@ -3,135 +3,20 @@ import fs from 'fs'
 import path from 'path'
 import Twig from 'twig'
 
-const templateFile = process.env.DYNSDJS_DOCKER_TEMPLATE_IN
-
-let callbackExec = process.env.DYNSDJS_DOCKER_TEMPLATE_CALLBACK || '',
-    outPath = process.env.DYNSDJS_DOCKER_TEMPLATE_OUT || ''
-
-function templateString( templateData, str ) {
-  let isvHost = 0
-
-  templateData.envs
-    .forEach(
-      env => {
-        if ( env.indexOf( 'VIRTUAL_HOST' ) !== -1 )
-          isvHost = 1
-      }
-    )
-
-  return str
-    .replace( 'CONTAINER_NAME', templateData.name )
-    .replace( 'CONTAINER_DOMAIN', templateData.domain )
-    .replace( 'CONTAINER_ISVHOST', isvHost )
-}
-
-function callback() {
-  return new Promise(
-    ( resolve, reject ) => {
-      if ( callbackExec ) {
-        exec(
-          callbackExec,
-          ( error, stdout, stderr ) => {
-            if ( error ) reject( `Post generation callback did not succesfully complete. Error: '${error}'` )
-            else resolve( true )
-          }
-        )
-      } else
-        resolve()
-    }
-  )
-}
-
-function deleteOutput() {
-  return new Promise(
-    ( resolve, reject ) => {
-      if ( outPath ) {
-        if ( fs.existsSync( outPath ) )
-          fs.unlink(
-            outPath,
-            err => {
-              if ( err ) reject( err )
-              else resolve()
-            }
-          )
-      } else
-        resolve()
-    }
-  )
-}
-
-function saveOutput( buffer ) {
-  return new Promise(
-    ( resolve, reject ) => {
-      if ( buffer ) {
-        if ( outPath ) {
-          fs.writeFile(
-            outPath,
-            buffer,
-            err => {
-              if ( err ) reject( err )
-              else resolve()
-            }
-          )
-        } else
-          reject( 'A template was generated, but no output path was defined. Is this really what you want?' )
-      } else
-        resolve()
-    }
-  )
-}
-
-function generate( container ) {
-  return new Promise(
-    ( resolve, reject ) => {
-      // Check if the user wants to generate a template
-      if ( templateFile ) {
-        // If the path is defined, and it exists then proceed with generation
-        if ( fs.existsSync( templateFile ) ) {
-          // Add custom 'exists' filter, which returns a boolean if the path exists
-          Twig
-            .extendFilter(
-              'exists',
-              path => {
-                let ret = false;
-
-                if ( path )
-                  ret = fs.existsSync( path )
-
-                return ret
-              }
-            )
-
-          Twig.renderFile(
-            templateFile,
-            {
-              container
-            },
-            ( err, out ) => {
-              if ( err ) reject( err )
-              else resolve( out )
-            }
-          )
-        // otherwise, warn the user about the non existant path
-        } else {
-          reject( 'Template file path does not exist. Skipping template generation.' )
-        }
-      // If not, just continue silently
-      } else
-        resolve()
-    }
-  )
-}
-
 export default class {
   constructor( chalk, status, container ) {
-    outPath = templateString( container, outPath )
-    callbackExec = templateString( container, callbackExec )
+    const me = this
 
-    generate( container )
-      .then( buffer => ( status === 'start' ? saveOutput( buffer ) : Promise.resolve() ) )
-      .then( () => ( status === 'stop' ? deleteOutput() : Promise.resolve() ) )
-      .then( () => callback() )
+    me.templateData = container
+    me.templateFile = process.env.DYNSDJS_DOCKER_TEMPLATE_IN
+    me.outPath = me.templateString( process.env.DYNSDJS_DOCKER_TEMPLATE_OUT || '' )
+    me.callbackExec = me.templateString( process.env.DYNSDJS_DOCKER_TEMPLATE_CALLBACK || '' )
+
+    me
+      .generate()
+      .then( buffer => ( status !== 'stop' ? me.saveOutput( buffer ) : Promise.resolve() ) )
+      .then( () => ( status === 'stop' ? me.deleteOutput() : Promise.resolve() ) )
+      .then( () => me.callback() )
       .then(
         callbackDone => {
           if ( callbackDone )
@@ -139,5 +24,125 @@ export default class {
         }
       )
       .catch( error => console.warn( `[${chalk.blue('DOCKER')}] ${error}` ) )
+  }
+  templateString( str ) {
+    const me = this
+
+    let isvHost = 0
+
+    me.templateData.envs
+      .forEach(
+        env => {
+          if ( env.indexOf( 'VIRTUAL_HOST' ) !== -1 )
+            isvHost = 1
+        }
+      )
+
+    return str
+      .replace( 'CONTAINER_NAME', me.templateData.name )
+      .replace( 'CONTAINER_DOMAIN', me.templateData.domain )
+      .replace( 'CONTAINER_ISVHOST', isvHost )
+  }
+  callback() {
+    const me = this
+
+    return new Promise(
+      ( resolve, reject ) => {
+        if ( me.callbackExec ) {
+          exec(
+            me.callbackExec,
+            ( error, stdout, stderr ) => {
+              if ( error ) reject( `Post generation callback did not succesfully complete. Error: '${error}'` )
+              else resolve( true )
+            }
+          )
+        } else
+          resolve()
+      }
+    )
+  }
+  deleteOutput() {
+    const me = this
+
+    return new Promise(
+      ( resolve, reject ) => {
+        if ( me.outPath ) {
+          if ( fs.existsSync( me.outPath ) )
+            fs.unlink(
+              me.outPath,
+              err => {
+                if ( err ) reject( err )
+                else resolve()
+              }
+            )
+        } else
+          resolve()
+      }
+    )
+  }
+  saveOutput( buffer ) {
+    const me = this
+
+    return new Promise(
+      ( resolve, reject ) => {
+        if ( buffer ) {
+          if ( me.outPath ) {
+            fs.writeFile(
+              me.outPath,
+              buffer,
+              err => {
+                if ( err ) reject( err )
+                else resolve()
+              }
+            )
+          } else
+            reject( 'A template was generated, but no output path was defined. Is this really what you want?' )
+        } else
+          resolve()
+      }
+    )
+  }
+  generate() {
+    const me = this
+
+    return new Promise(
+      ( resolve, reject ) => {
+        // Check if the user wants to generate a template
+        if ( me.templateFile ) {
+          // If the path is defined, and it exists then proceed with generation
+          if ( fs.existsSync( me.templateFile ) ) {
+            // Add custom 'exists' filter, which returns a boolean if the path exists
+            Twig
+              .extendFilter(
+                'exists',
+                path => {
+                  let ret = false;
+
+                  if ( path )
+                    ret = fs.existsSync( path )
+
+                  return ret
+                }
+              )
+
+            Twig.renderFile(
+              me.templateFile,
+              {
+                container: me.templateData
+              },
+              ( err, out ) => {
+                if ( err ) reject( err )
+                else resolve( out )
+              }
+            )
+          // otherwise, warn the user about the non existant path
+          } else {
+            reject( 'Template file path does not exist. Skipping template generation.' )
+          }
+        // If not, just continue silently
+        } else
+          resolve()
+      }
+    )
   }
 }
