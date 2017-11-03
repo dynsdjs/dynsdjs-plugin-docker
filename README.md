@@ -72,6 +72,7 @@ Some environment variables accept some template strings, that will be replaced d
 - `CONTAINER_NAME`: the container name ( given through `--name` on `docker run` )
 - `CONTAINER_DOMAIN`: the container attached domain(s) ( given through `--name` on `docker run` or `-e VIRTUAL_HOST=` ).
   **WARNING:** this may contain comma-separated values.
+- `CONTAINER_ISVHOST`: a boolean flag ( 0 or 1 ) that will tell if the current container is a vhost ( 1 = true, 0 = false )
 
 ### Twig file context
 
