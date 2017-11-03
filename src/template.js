@@ -6,10 +6,9 @@ import Twig from 'twig'
 const templateFile = process.env.DYNSDJS_DOCKER_TEMPLATE_IN
 
 let callbackExec = process.env.DYNSDJS_DOCKER_TEMPLATE_CALLBACK || '',
-    outPath = process.env.DYNSDJS_DOCKER_TEMPLATE_OUT || '',
-    templateData
+    outPath = process.env.DYNSDJS_DOCKER_TEMPLATE_OUT || ''
 
-function templateString( str ) {
+function templateString( templateData, str ) {
   let isvHost = 0
 
   templateData.envs
@@ -82,7 +81,7 @@ function saveOutput( buffer ) {
   )
 }
 
-function generate() {
+function generate( container ) {
   return new Promise(
     ( resolve, reject ) => {
       // Check if the user wants to generate a template
@@ -106,7 +105,7 @@ function generate() {
           Twig.renderFile(
             templateFile,
             {
-              container: templateData
+              container
             },
             ( err, out ) => {
               if ( err ) reject( err )
@@ -126,12 +125,10 @@ function generate() {
 
 export default class {
   constructor( chalk, status, container ) {
-    templateData = container
+    outPath = templateString( container, outPath )
+    callbackExec = templateString( container, callbackExec )
 
-    outPath = templateString( outPath )
-    callbackExec = templateString( callbackExec )
-
-    generate()
+    generate( container )
       .then( buffer => ( status === 'start' ? saveOutput( buffer ) : Promise.resolve() ) )
       .then( () => ( status === 'stop' ? deleteOutput() : Promise.resolve() ) )
       .then( () => callback() )
