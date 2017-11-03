@@ -10,9 +10,20 @@ let callbackExec = process.env.DYNSDJS_DOCKER_TEMPLATE_CALLBACK || '',
     templateData
 
 function templateString( str ) {
+  let isvHost = 0
+
+  templateData.envs
+    .forEach(
+      env => {
+        if ( env.indexOf( 'VIRTUAL_HOST' ) !== -1 )
+          isvHost = 1
+      }
+    )
+
   return str
     .replace( 'CONTAINER_NAME', templateData.name )
     .replace( 'CONTAINER_DOMAIN', templateData.domain )
+    .replace( 'CONTAINER_ISVHOST', isvHost )
 }
 
 function callback() {
