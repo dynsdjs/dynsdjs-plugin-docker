@@ -10,13 +10,15 @@ export default class {
     me.templateData = container
     me.templateFile = process.env.DYNSDJS_DOCKER_TEMPLATE_IN
     me.outPath = me.templateString( process.env.DYNSDJS_DOCKER_TEMPLATE_OUT || '' )
-    me.callbackExec = me.templateString( process.env.DYNSDJS_DOCKER_TEMPLATE_CALLBACK || '' )
+    me.callbackExecPre = me.templateString( process.env.DYNSDJS_DOCKER_TEMPLATE_CALLBACK_PRE || '' )
+    me.callbackExecPost = me.templateString( process.env.DYNSDJS_DOCKER_TEMPLATE_CALLBACK_POST || '' )
 
     me
-      .generate()
+      .callback( 'Pre', me.callbackExecPre )
+      .then( () => me.generate() )
       .then( buffer => ( status !== 'stop' ? me.saveOutput( buffer ) : Promise.resolve() ) )
       .then( () => ( status === 'stop' ? me.deleteOutput() : Promise.resolve() ) )
-      .then( () => me.callback() )
+      .then( () => me.callback( 'Post', me.callbackExecPost ) )
       .then(
         callbackDone => {
           if ( callbackDone )
@@ -43,16 +45,16 @@ export default class {
       .replace( 'CONTAINER_DOMAIN', me.templateData.domain )
       .replace( 'CONTAINER_ISVHOST', isvHost )
   }
-  callback() {
+  callback( type, cmd ) {
     const me = this
 
     return new Promise(
       ( resolve, reject ) => {
-        if ( me.callbackExec ) {
+        if ( cmd ) {
           exec(
-            me.callbackExec,
+            cmd,
             ( error, stdout, stderr ) => {
-              if ( error ) reject( `Post generation callback did not succesfully complete. Error: '${error}'` )
+              if ( error ) reject( `${type} generation callback did not succesfully complete. Error: '${error}'` )
               else resolve( true )
             }
           )
