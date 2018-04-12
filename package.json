@@ -1,6 +1,6 @@
 {
   "name": "dynsdjs-plugin-docker",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Docker plugin for dynsdjs",
   "author": "Julian Xhokaxhiu",
   "license": "MIT",
