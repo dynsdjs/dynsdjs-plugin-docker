@@ -36,13 +36,13 @@ const buildInfo = ( status, name, data ) => {
       .forEach(
         env => {
           if ( env.indexOf( 'VIRTUAL_HOST' ) !== -1 )
-            container.domain = punycode.toASCII( env.split("=")[1] )
+            container.domain = Punycode.toASCII( env.split("=")[1] )
         }
       )
 
   // If we still have no domain set, we use the generated name as fallback
   if ( !container.domain )
-    container.domain = punycode.toASCII( container.name )
+    container.domain = Punycode.toASCII( container.name )
 
   // Handle multiple domains using CSV format
   const domains = container.domain.split( ',' )
