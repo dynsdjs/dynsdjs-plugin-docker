@@ -1,5 +1,6 @@
 import Dockerode from 'dockerode'
 import DockerEvents from 'docker-events'
+import Punycode from 'punycode'
 import TemplateGenerator from './template'
 
 // We will use this to store a reference to the dynsd chalk instance
@@ -35,13 +36,13 @@ const buildInfo = ( status, name, data ) => {
       .forEach(
         env => {
           if ( env.indexOf( 'VIRTUAL_HOST' ) !== -1 )
-            container.domain = env.split('=')[1]
+            container.domain = punycode.toASCII( env.split("=")[1] )
         }
       )
 
   // If we still have no domain set, we use the generated name as fallback
   if ( !container.domain )
-    container.domain = container.name
+    container.domain = punycode.toASCII( container.name )
 
   // Handle multiple domains using CSV format
   const domains = container.domain.split( ',' )
