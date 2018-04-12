@@ -22,7 +22,7 @@
     "dynsd"
   ],
   "devDependencies": {
-    "babili-webpack-plugin": "^0.1.2",
+    "babel-minify-webpack-plugin": "^0.3.1",
     "docker-events": "0.0.2",
     "dockerode": "^2.5.1",
     "punycode": "^2.1.0",

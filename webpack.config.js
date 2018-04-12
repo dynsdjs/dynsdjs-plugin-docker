@@ -1,7 +1,7 @@
 const path = require('path'),
       webpack = require('webpack'),
       package = require('./package.json')
-      BabiliPlugin = require('babili-webpack-plugin'),
+      MinifyPlugin = require('babel-minify-webpack-plugin'),
       WebpackSourceMapSupport = require('webpack-source-map-support')
 
 module.exports = function( env ) {
@@ -60,7 +60,9 @@ module.exports = function( env ) {
           minimize: true,
           debug: false
         }),
-        new BabiliPlugin({}, {
+        new MinifyPlugin({
+          mangle: false
+        }, {
           comments: false,
           sourceMap: false
         })
