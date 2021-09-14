@@ -22,13 +22,13 @@
     "dynsd"
   ],
   "devDependencies": {
-    "babel-minify-webpack-plugin": "^0.3.1",
     "docker-events": "0.0.2",
-    "dockerode": "^2.5.1",
-    "punycode": "^2.1.0",
+    "dockerode": "^2.5.8",
+    "punycode": "^2.1.1",
     "shebang-loader": "0.0.1",
-    "twig": "^1.10.5",
-    "webpack": "^3.3.0",
-    "webpack-source-map-support": "^2.0.1"
+    "terser-webpack-plugin": "^5.2.4",
+    "twig": "^1.15.4",
+    "webpack": "^5.52.1",
+    "webpack-cli": "^4.8.0"
   }
 }

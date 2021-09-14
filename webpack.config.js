@@ -1,8 +1,7 @@
 const path = require('path'),
       webpack = require('webpack'),
       package = require('./package.json')
-      MinifyPlugin = require('babel-minify-webpack-plugin'),
-      WebpackSourceMapSupport = require('webpack-source-map-support')
+      TerserPlugin = require('terser-webpack-plugin')
 
 module.exports = function( env ) {
   const filename = package.main.replace( 'dist/', '' ),
@@ -41,30 +40,23 @@ module.exports = function( env ) {
     }
   }
 
-  if ( !env ) {
+  if ( env.prod ) {
+    // ---- PROD ----
+    config.optimization = {
+      minimize: true,
+      minimizer: [new TerserPlugin()],
+    }
+  } else {
     // ---- DEV ----
     config.devtool = 'inline-source-map'
 
     Array.prototype.push.apply(
       config.plugins,
       [
-        new WebpackSourceMapSupport()
-      ]
-    )
-  } else {
-    // ---- PROD ----
-    Array.prototype.push.apply(
-      config.plugins,
-      [
-        new webpack.LoaderOptionsPlugin({
-          minimize: true,
-          debug: false
-        }),
-        new MinifyPlugin({
-          mangle: false
-        }, {
-          comments: false,
-          sourceMap: false
+        new webpack.BannerPlugin({
+          banner: 'require("source-map-support").install();',
+          raw: true,
+          entryOnly: false
         })
       ]
     )
