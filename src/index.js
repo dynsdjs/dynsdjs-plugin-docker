@@ -1,6 +1,6 @@
 import Dockerode from 'dockerode'
 import DockerEvents from 'docker-events'
-import Punycode from 'punycode'
+import Punycode from 'punycode/'
 import TemplateGenerator from './template'
 
 // We will use this to store a reference to the dynsd chalk instance
